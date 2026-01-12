@@ -61,7 +61,6 @@
 									    <a class="forgetpwd">忘记密码？</a>
                                         <div class="login-text">
                                             登录即同意相关服务条款和隐私政策 <a>《小鹿线用户服务协议》</a><a>《小鹿线隐私政策》</a>
-                                            若您没有账号，系统将为您自动创建账号并登录。<router-link to="/register" class="register-link">去注册</router-link>
                                         </div>
                                     </el-form>
 	                            </div>
