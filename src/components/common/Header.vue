@@ -22,9 +22,9 @@
 					<input type="" name="" placeholder="输入搜索课程">
 					<el-icon :size='22' color='#808080'><search /></el-icon>
 				</div>
-				<router-link to="/cart" class='cntent-shopping'>
+				<div class='cntent-shopping' @click='goCart'>
 					<el-icon :size='24' color='#808080'><shopping-cart /></el-icon>
-				</router-link>
+				</div>
 				<div class='content-login'>
 					<router-link to="/login">登录/注册</router-link>
 				</div>
@@ -36,6 +36,13 @@
 
 <script setup>
 import { Search , ShoppingCart} from "@element-plus/icons-vue";
+import { useRouter } from 'vue-router';
+//路由
+const router = useRouter();
+//进入购物车
+const goCart = ()=>{
+	router.push('/cart');
+}
 </script>
 
 <style scoped>
@@ -109,17 +116,6 @@ header{
 	color:#808080;
 	font-size:16px;
 	outline: none;
-}
-.cntent-shopping{
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-	text-decoration: none;
-	padding: 5px;
-}
-.cntent-shopping:hover{
-	opacity: 0.7;
 }
 .content-login{  
 	font-size: 18px;

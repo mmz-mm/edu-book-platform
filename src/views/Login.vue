@@ -59,9 +59,9 @@
 									      <el-button type="primary" @click='userBtn(ruleFormRef)'>登录</el-button>
 									    </el-form-item>
 									    <a class="forgetpwd">忘记密码？</a>
-                                        <div class="login-text">
-                                            登录即同意相关服务条款和隐私政策 <a>《小鹿线用户服务协议》</a><a>《小鹿线隐私政策》</a>
-                                        </div>
+	                                    <div class="login-text">
+	                                        登录即同意相关服务条款和隐私政策 <a >《小鹿线用户服务协议》</a><a>《小鹿线隐私政策》</a> 若您没有账号，系统将为您自动创建账号并登录。
+	                                    </div>
                                     </el-form>
 	                            </div>
 	                        </div>
@@ -80,15 +80,14 @@
 
 									    <el-form-item class="login-Verification" prop="captcha">
 									       <el-input v-model='ruleFormPhone.captcha' placeholder="请输入您的验证码"/>
-									        <el-button @click='sendCode' class="btn btn-primary sendcaptcha" type="primary">{{ captcha }}</el-button>
+									        <el-button @click='sendCode' class="btn btn-primary sendcaptcha" type="primary" :disabled="countdown > 0">{{ captcha }}</el-button>
 									    </el-form-item>
 	                                    <div class="login-submit">
 	                                    	<el-button @click='phoneBtn(ruleFormRefPhone)' class="btn btn-primary sendcaptcha" type="primary">登录</el-button>
 	                                    </div>
-                                        <div class="login-text">
-                                            登录即同意相关服务条款和隐私政策 <a>《小鹿线用户服务协议》</a><a>《小鹿线隐私政策》</a>
-                                            若您没有账号，系统将为您自动创建账号并登录。<router-link to="/register" class="register-link">去注册</router-link>
-                                        </div>
+	                                    <div class="login-text">
+	                                        登录即同意相关服务条款和隐私政策 <a>《小鹿线用户服务协议》</a><a>《小鹿线隐私政策》</a> 若您没有账号，系统将为您自动创建账号并登录。
+	                                    </div>
 	                                </el-form>
 	                            </div>
 	                        </div>
@@ -98,11 +97,12 @@
 	        </div>
 		</section>
 	</div>
-   
+    
 </template>
 
 <script setup>
 import { ref , reactive } from 'vue';
+import { useRouter } from 'vue-router';
 //element-ui
 import { Avatar , Lock , Iphone } from "@element-plus/icons-vue";
 import { ElMessage } from 'element-plus'
@@ -113,6 +113,7 @@ import { Encrypt } from '../utils/aes'
 //pinia
 import { useUserStore } from '../store/user'
 const userStore = useUserStore();
+const router = useRouter();
 
 //账号登录和短信登录切换
 let current = ref(1);
@@ -158,7 +159,22 @@ const userBtn = (formEl) => {
 					})
 					return;
 				} 
+				ElMessage({
+				    showClose: true,
+				    message: '登录成功',
+				    type: 'success',
+				})
 				userStore.setToken(res.data.accessToken);
+				// 登录成功后跳转到首页
+				setTimeout(() => {
+					router.push('/');
+				}, 1000);
+			}).catch(err => {
+				ElMessage({
+				    showClose: true,
+				    message: '登录失败，请稍后重试',
+				    type: 'error',
+				})
 			})
 	    } else {
 	      	ElMessage({
@@ -171,6 +187,7 @@ const userBtn = (formEl) => {
 }
 //短信登录
 let captcha = ref('发送验证码');
+let countdown = ref(0);
 const ruleFormRefPhone = ref('');
 let ruleFormPhone = reactive({
     phone:'',
@@ -185,8 +202,59 @@ let rulesPhone = reactive({
     { required: true,message: '请输入验证码', trigger: 'blur',}
   ]
 });
-//引入滑块组件
-// import Verify from '../components/verifition/Verify.vue'
+//发送验证码
+const sendCode = () => {
+    if (!ruleFormPhone.phone) {
+        ElMessage({
+            showClose: true,
+            message: '请输入手机号',
+            type: 'warning',
+        })
+        return;
+    }
+    // 验证手机号格式
+    if (!/^1[3456789]\d{9}$/.test(ruleFormPhone.phone)) {
+        ElMessage({
+            showClose: true,
+            message: '请输入正确的手机号格式',
+            type: 'warning',
+        })
+        return;
+    }
+    sendCaptcha({ mobile: ruleFormPhone.phone }).then(res => {
+        if (res.meta.code === '10006') {
+            ElMessage({
+                showClose: true,
+                message: '验证码发送成功，验证码为：123456',
+                type: 'success',
+            })
+            // 倒计时
+            countdown.value = 60;
+            captcha.value = `${countdown.value}秒后重发`;
+            const timer = setInterval(() => {
+                countdown.value--;
+                if (countdown.value > 0) {
+                    captcha.value = `${countdown.value}秒后重发`;
+                } else {
+                    captcha.value = '发送验证码';
+                    clearInterval(timer);
+                }
+            }, 1000);
+        } else {
+            ElMessage({
+                showClose: true,
+                message: res.meta.msg || '验证码发送失败',
+                type: 'error',
+            })
+        }
+    }).catch(err => {
+        ElMessage({
+            showClose: true,
+            message: '验证码发送失败',
+            type: 'error',
+        })
+    })
+}
 
 
 //登录按钮
@@ -208,7 +276,22 @@ const phoneBtn = (formEl) => {
                     })
                     return;
                 }
+                ElMessage({
+                    showClose: true,
+                    message: '登录成功',
+                    type: 'success',
+                })
                 userStore.setToken(res.data.accessToken);
+                // 登录成功后跳转到首页
+                setTimeout(() => {
+                    router.push('/');
+                }, 1000);
+            }).catch(err => {
+                ElMessage({
+                    showClose: true,
+                    message: '登录失败，请稍后重试',
+                    type: 'error',
+                })
             })
         } else {
             ElMessage({
