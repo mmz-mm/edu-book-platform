@@ -24,7 +24,7 @@
                             <img :src="item.courseCover" >
                         </div>
                         <div class="courseName">{{ item.courseName }}</div>
-                        <div class="courseDegree">{{item.courseLevel}} · {{item.purchaseCounter + item.purchaseCnt}}人报名</div>
+                        <div class="courseDegree">{{item.courseLevelText || item.courseLevel}} · {{item.purchaseCounter + item.purchaseCnt}}人报名</div>
                         <div class="coursePricePri">￥{{ item.discountPrice }}</div>
                     </div>
                 </li>

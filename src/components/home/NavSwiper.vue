@@ -40,7 +40,7 @@
                                             <div class="courseName">
                                                 {{ item.courseName }}
                                             </div>
-                                            <div class="courseDegree">{{ item.courseLevel }} · {{ item.purchaseCounter + item.purchaseCnt }}人购买</div>
+                                            <div class="courseDegree">{{ item.courseLevelText || item.courseLevel }} · {{ item.purchaseCounter + item.purchaseCnt }}人购买</div>
                                             <div class="buy">
                                                 <div class="buy-free"> 
                                                         <div class="coursePrice">
