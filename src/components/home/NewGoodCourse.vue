@@ -19,6 +19,7 @@
                 class="courseItem"
                 v-for="item in newCourseList" 
                 :key="item.id">
+                <router-link :to="`/course-info/${item.id}`">
                     <div class="courseInfo">
                         <div class="courseBg">
                             <img :src="item.courseCover" >
@@ -27,6 +28,7 @@
                         <div class="courseDegree">{{item.courseLevelText || item.courseLevel}} · {{item.purchaseCounter + item.purchaseCnt}}人报名</div>
                         <div class="coursePricePri">￥{{ item.discountPrice }}</div>
                     </div>
+                </router-link>
                 </li>
             </ul>
 

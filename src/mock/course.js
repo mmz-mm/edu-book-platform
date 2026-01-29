@@ -58,6 +58,25 @@ if (import.meta.env.DEV) {
       { id: '2402', categoryName: '管理系统' },
       { id: '2403', categoryName: '全栈实战' },
     ],
+    '1006': [
+      { id: '2501', categoryName: '人工智能' },
+      { id: '2502', categoryName: '机器学习' },
+      { id: '2503', categoryName: '深度学习' },
+    ],
+    '1007': [
+      { id: '2601', categoryName: '云计算' },
+      { id: '2602', categoryName: '大数据' },
+    ],
+    '1008': [
+      { id: '2701', categoryName: '网络安全' },
+      { id: '2702', categoryName: '数据安全' },
+      { id: '2703', categoryName: '加密技术' },
+    ],
+    '1009': [
+      { id: '2801', categoryName: '网络安全' },
+      { id: '2802', categoryName: '数据安全' },
+      { id: '2803', categoryName: '加密技术' },
+    ],
   }
 
   const buildCourse = (idx, overrides = {}) => {
@@ -99,11 +118,25 @@ if (import.meta.env.DEV) {
   })
 
   // 获取二级分类
+  // 约定：
+  // - 如果带 firstCategoryId 参数：返回该一级分类下的二级分类
+  // - 如果不带 firstCategoryId：返回所有一级分类下的所有二级分类（课程页“课程分类”用）
   Mock.mock(/\/api\/course\/category\/getSecondCategorys(\?.*)?$/, 'get', (options) => {
     const url = options.url || ''
-    const match = url.match(/firstCategoryId=([^&]+)/)
-    const firstCategoryId = match ? decodeURIComponent(match[1]) : '1001'
+    const queryString = url.split('?')[1] || ''
+    const params = new URLSearchParams(queryString)
+    const firstCategoryId = params.get('firstCategoryId')
 
+    // 没有指定 firstCategoryId：返回全部二级分类
+    if (!firstCategoryId) {
+      const allSeconds = Object.values(secondCategoryMap).flat()
+      return {
+        meta: { code: '10006', msg: 'success' },
+        data: { list: allSeconds },
+      }
+    }
+
+    // 指定了 firstCategoryId：只返回对应一级下的二级分类
     return {
       meta: { code: '10006', msg: 'success' },
       data: { list: secondCategoryMap[firstCategoryId] || [] },

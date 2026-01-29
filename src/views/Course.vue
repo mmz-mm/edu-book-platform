@@ -1,10 +1,10 @@
 <template>
-    <Header></Header>
-    <div class="coursemain">
-        <div class="course-main">
-            <section class="search-container">
+	<Header></Header>
+	<div class='coursemain'>
+		<div class="course-main">
+			<section class="search-container">
 		        <div class="search-item">
-		          <div class="title-name">课程方向：</div>	
+		          <div class="title-name">课程方向：</div>
 		          <div class="all-items">
 		            <el-tag
 		                class="category-poniter"
@@ -15,31 +15,27 @@
 		            	v-for='item in firstCategorys'
 		            	:key='item.id'
 		                class="category-poniter-item"
-		                :class="currentType['fcategory'].id == item.id ? 'category-poniter' : 'category-poniter-item'"
 		                effect="plain"
 		                type="info"
-		                @click="buildingCondition('fcategory', item.id)"
 		            >
 		            	{{ item.categoryName }}
 		            </el-tag>
-		        </div>		
+		        </div>
 		        </div>
 		        <div class="search-item search-item-transition" style="top: 45px;">
 		          <div class="title-name">课程分类：</div>
 		          <div class="all-items">
 		             <el-tag
 		                class="category-poniter"
-		                effect="plain"	
+		                effect="plain"
 		                type="info"
 		            >全部</el-tag>
 		            <el-tag
 		            	v-for='item in secondCategorys'
 		            	:key='item.id'
 		                class="category-poniter-item"
-		               :class="currentType['scategory'].id == item.id ? 'category-poniter' : 'category-poniter-item'"
 		                effect="plain"
 		                type="info"
-		                @click="buildingCondition('scategory', item.id)"
 		            >  {{ item.categoryName }}
 		            </el-tag>
 		          </div>
@@ -51,24 +47,20 @@
 		                class="category-poniter"
 		                effect="plain"
 		                type="info"
-		                @click="buildingCondition('clevel', '')"
 		            >全部</el-tag>
 		            <el-tag
 		            	v-for='item in courseLevel'
-		            	:key='item.code'
+		            	:key='item.id'
 		                class="category-poniter-item"
-		                 :class="currentType['clevel'].id == item.code ? 'category-poniter' : 'category-poniter-item'"
 		                effect="plain"
 		                type="info"
-		                @click="buildingCondition('clevel', item.code)"
 		            >  {{ item.text }}
 		            </el-tag>
 		          </div>
 		        </div>
      		</section>
-
-        </div>
-        <div class='main-container'>
+		</div>
+		<div class='main-container'>
 			<div class="container-top">
 		        <ul class="all">
 		          <li class="item">综合</li>
@@ -106,6 +98,7 @@
 		            	v-for='item in courseList'
 		            	:key='item.id'
 		            >
+					 <router-link :to="`/course-info/${item.id}`">
 						<div class='courseInfo'>
 							<div class='courseBg'>
 								<img :src="item.courseCover">
@@ -127,6 +120,7 @@
 	                            <div class="pricePri">¥ {{item.discountPrice}}</div>
 	                        </div>
 						</div>
+					 </router-link>
 					</li>
 		          </ul>
 		        </div>
@@ -140,88 +134,76 @@
 			    </div>
 		   	</div>
 		</div>
-    </div>
-    <Foot></Foot>
+	</div>
+	<Foot></Foot>
 </template>
 
 <script setup  >
     //mixin
-    import mixin from '@/mixins/courseType.js'  
-    let { courseTypeFn } = mixin;  //引入mixin中的方法
-   //组件
-    import Header from '@/components/common/Header.vue';
-    import Foot from '@/components/common/Foot.vue';
-    //api
-    import { getFirstCategorys, getSecondCategorys, searchCourse } from '@/utils/api/courseManage';
-    import { ref, reactive, onBeforeMount } from 'vue';
-    //获取一级分类数据
-    let firstCategorys = ref([]);
-    //获取二级分类数据
-    let secondCategorys = ref([]);
-    //课程难度的数据
-    let courseLevel = ref([
-	{text: '初级',code: '1'}, 
-  	{text: '中级',code: '2'},
- 	{text: '高级',code: '3'}
-    ]);
-    //查询课程列表
-    let courseList = ref([]);
-    //课程的总数量
-    let total = ref(0);
-    //查询参数
-    let queryCourseParams = reactive({
-        pageNum: 1,
-        pageSize: 8
-    });
-    //当前选中的分类
-    let currentType = reactive({
-        fcategory: { id: '' },
-        scategory: { id: '' },
-        clevel: { id: '' }
-    });
+	import mixin from '../mixins/courseType.js'
+	let { courseTypeFn } = mixin();
+	//组件
+	import Header from '../components/common/Header.vue'
+	import Foot from '../components/common/Foot.vue'
+	//api
+	import { getFirstCategorys , getSecondCategorys , searchCourse } from '../utils/api/courseManage'
+	//获取一级分类的数据
+	let firstCategorys = ref([]);
+	//获取二级分类的数据
+	let secondCategorys = ref([]);
+	//课程难度的数据
+	let courseLevel = ref([
+		{text: '初级',code: '1'}, 
+		{text: '中级',code: '2'},
+		{text: '高级',code: '3'}
+	]);
+	//查询课程的数据
+	let courseList = ref([]);
+	//课程的总数量
+	let total = ref(0);
+	let queryCoursePrams = reactive({
+		pageNum:1,
+		pageSize:8
+	})
+	const querySearchCourse = ()=>{
+		searchCourse(queryCoursePrams).then(res=>{
+			courseList.value = res.data.pageInfo.list;
+			total.value = res.data.pageInfo.total;
+		})
+	}
+	//生命周期
+	onBeforeMount(()=>{
+		//请求一级分类
+		getFirstCategorys().then(res=>{
+			firstCategorys.value = res.data.list;
+		})
+		//请求二级分类
+		getSecondCategorys({
+			categoryId:-1
+		}).then(res=>{
+			secondCategorys.value = res.data.list;
+		})
+		//查询所有课程
+		querySearchCourse();
+	})
 
-    // 获取一级分类
-    const loadFirstCategorys = async () => {
-        try {
-            const res = await getFirstCategorys();
-            if (res && res.data) {
-                firstCategorys.value = res.data.list || [];
-            }
-        } catch (error) {
-            console.error('获取一级分类失败:', error);
-        }
-    };
+	//分页
+	const handleCurrentChange = ( val )=>{
+		//页面的赋值
+		queryCoursePrams.pageNum = val;
+		//查询对应页的数据
+		querySearchCourse();
+	}
 
-    // 获取二级分类
-    const loadSecondCategorys = async (firstCategoryId) => {
-        try {
-            const res = await getSecondCategorys({ firstCategoryId });
-            if (res && res.data) {
-                secondCategorys.value = res.data.list || [];
-            }
-        } catch (error) {
-            console.error('获取二级分类失败:', error);
-        }
-    };
-
-   
-
-    // 组件挂载时加载数据
-    onBeforeMount(() => {
-        loadFirstCategorys();
-		loadSecondCategorys();
-      
-    });
-    
 </script>
 
 <style scoped>
-.course-main {
+  .course-main {
 	padding: 20px 0;
 	width: 100%;
 	height: 130px;
 	background: #f3f5f9;
-  }
+	}
   .search-container{
 	width: 1200px;
 	margin: 0 auto;
