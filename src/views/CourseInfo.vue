@@ -77,8 +77,8 @@
 	                <span class="shipin">视频：</span>
 	                <span class="chapterName">课程标题</span>
 	                <span class="free">试看</span>
-	              </div>
-	              <button class="btn-learn">开始学习</button>
+	              </div>              
+	              <button class="btn-learn" >开始学习</button>
 	              <div class="clearfloat"></div>
 	            </li>
 	          </ul>
@@ -113,6 +113,12 @@ import Foot from '../components/common/Foot.vue'
 let active = ref(true);
 //判断下载资料数据
 let downloadList = ref([]);
+//跳转播放页面
+// const goPlay = (item,chapterId)=>{
+//   router.push({
+//     path: '/course-play/' + item.courseId +'/'+ chapterId,
+//   })
+// }
 </script>
 
 <style scoped>

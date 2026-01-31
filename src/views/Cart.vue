@@ -19,20 +19,40 @@
             <li class="item total">金额</li>
             <li class="item function">操作</li>
           </ul>
-          <div v-if="cartList.length > 0">
-            
+          <div v-if="true">
+            <ul class="haveorder">
+              <li class="order-item">
+                <el-checkbox ></el-checkbox>
+              </li>
+              <li class="order-item info" >
+                <div class="courseimg" >
+                  <img src="" alt="">
+                </div>
+                <div class="course-name">名称</div>
+              </li>
+
+              <li class="order-item">￥10</li>
+              <li class="order-item num">10</li>
+              <li class="order-item totoalprice">￥299</li>
+              <li class="order-item delete" >
+                <a href="javascript:;">
+                  <i class="el-icon-delete"></i>
+                  <span class="deletd-text">删除</span>
+                </a>
+              </li>
+            </ul>
           </div>
-          <div class="noOrder" v-else >
+          <div class="noOrder" v-else>
             <img src="/image/norder365.png" alt="">
             <div class="order-alert">哎呦！暂无订单</div>
           </div>
-           <el-divider class="line"></el-divider>
-          <ul class="foot"> 
-            <li class="foot-item">已选课程<span class="unique">10</span></li>   
-            <li class="foot-item">合计<span class="unique">299</span></li>     
-            <li>
-              <button class="btn">去结算</button>
-            </li>   
+          <el-divider class="line"></el-divider>
+          <ul class="foot">
+            <li class="foot-item">已选课程<span class="unique">10</span></li>
+            <li class="foot-item">合计<span class="unique">299</span></li>
+            <li >
+              <button class="btn" @click="goOrder">去结算</button>
+            </li>
           </ul>
         </div>
       </div>
@@ -44,6 +64,10 @@
 //组件
 import Header from '../components/common/Header.vue'
 import Foot from '../components/common/Foot.vue'
+let router = useRouter();
+const goOrder = ()=>{
+  router.push('/confirmOrder');
+}
 </script>
 <style scoped>
 .fixed{
@@ -77,16 +101,15 @@ import Foot from '../components/common/Foot.vue'
   border-radius: 12px;
   box-shadow: 0px 2px 5px #888888;
 }
-/* .main{
+.main{
   padding:20px;
   border-radius: 5px;
-} */
-/* .main-shop{
+}
+.main-shop{
   position: relative;
   display: flex;
   align-content: center;
-} */
-/* 
+}
 .main-shop i{
   font-size: 35px;
   padding: 20px 10px 0 0;
@@ -131,7 +154,7 @@ import Foot from '../components/common/Foot.vue'
   line-height: 0px;
   color: #333333;
   opacity: 0.5;
-} */
+}
 
 /* 头部开始 */
 .head{
@@ -148,7 +171,7 @@ import Foot from '../components/common/Foot.vue'
   border-radius: 5px;
   box-shadow: 0px 2px 5px 2px #cccccc;
 }
-/* .head .item{
+.head .item{
   width: 150px;
   font-size: 14px;
   color: #333333;
@@ -164,7 +187,7 @@ import Foot from '../components/common/Foot.vue'
 .classInfo{
   width: 400px!important;
   color: #333333;
-} */
+}
 /* 头部结束 */
 
 /* 订单开始 */
