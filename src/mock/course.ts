@@ -4,7 +4,7 @@ import Mock from 'mockjs'
 if (import.meta.env.DEV) {
   /**
    * 说明：
-   * - 本项目 axios 响应拦截器会 return response.data（见 src/utils/api/request.js）
+   * - 本项目 axios 响应拦截器会 return response.data（见 src/utils/api/request.ts）
    * - 所以这里 Mock 返回的对象就是业务层拿到的 res
    * - 组件里用到的结构有：
    *   - res.data.list
@@ -13,9 +13,9 @@ if (import.meta.env.DEV) {
 
   const Random = Mock.Random
 
-  // 课程封面图：尽量用可访问的占位图，避免本地/外链 404 导致页面看起来“没渲染”
-  const cover = (seed) => `https://picsum.photos/seed/${seed}/640/360`
-  const slider = (seed) => `https://picsum.photos/seed/slider-${seed}/1200/460`
+  // 课程封面图：尽量用可访问的占位图，避免本地/外链 404 导致页面看起来"没渲染"
+  const cover = (seed: string | number) => `https://picsum.photos/seed/${seed}/640/360`
+  const slider = (seed: string | number) => `https://picsum.photos/seed/slider-${seed}/1200/460`
 
   const firstCategories = [
     { id: '1001', categoryName: '前端开发' },
@@ -30,7 +30,7 @@ if (import.meta.env.DEV) {
     
   ]
 
-  const secondCategoryMap = {
+  const secondCategoryMap: Record<string, Array<{ id: string; categoryName: string }>> = {
     '1001': [
       { id: '2001', categoryName: 'Vue' },
       { id: '2002', categoryName: 'React' },
@@ -79,7 +79,7 @@ if (import.meta.env.DEV) {
     ],
   }
 
-  const buildCourse = (idx, overrides = {}) => {
+  const buildCourse = (idx: number, overrides: Record<string, any> = {}) => {
     const courseLevelCode = (idx % 3) + 1 // 1/2/3 (数字类型，用于 courseTypeFn)
     const courseLevelText = courseLevelCode === 1 ? '初级' : courseLevelCode === 2 ? '中级' : '高级'
 
@@ -120,8 +120,8 @@ if (import.meta.env.DEV) {
   // 获取二级分类
   // 约定：
   // - 如果带 firstCategoryId 参数：返回该一级分类下的二级分类
-  // - 如果不带 firstCategoryId：返回所有一级分类下的所有二级分类（课程页“课程分类”用）
-  Mock.mock(/\/api\/course\/category\/getSecondCategorys(\?.*)?$/, 'get', (options) => {
+  // - 如果不带 firstCategoryId：返回所有一级分类下的所有二级分类（课程页"课程分类"用）
+  Mock.mock(/\/api\/course\/category\/getSecondCategorys(\?.*)?$/, 'get', (options: any) => {
     const url = options.url || ''
     const queryString = url.split('?')[1] || ''
     const params = new URLSearchParams(queryString)
@@ -157,8 +157,8 @@ if (import.meta.env.DEV) {
   })
 
   // 查询课程标签
-  Mock.mock('/api/course/tags/list', 'post', (options) => {
-    let body = {}
+  Mock.mock('/api/course/tags/list', 'post', (options: any) => {
+    let body: any = {}
     try {
       body = JSON.parse(options.body || '{}')
     } catch (e) {
@@ -166,7 +166,7 @@ if (import.meta.env.DEV) {
     }
     const firstCategory = body?.entity?.firstCategory || '1001'
 
-    const baseTags = {
+    const baseTags: Record<string, string[]> = {
       '1001': ['Vue3', 'React18', 'TypeScript', 'Vite', '工程化', '组件库', '性能优化', 'SSR'],
       '1002': ['Node', 'Express', 'Koa', 'NestJS', 'MySQL', 'Redis', 'JWT', '微服务'],
       '1003': ['Flutter', 'Dart', 'Android', 'Kotlin', 'iOS', 'Swift'],
@@ -197,8 +197,8 @@ if (import.meta.env.DEV) {
   })
 
   // 查询课程（导航 hover 会用它；也给 Course 列表页复用）
-  Mock.mock('/api/course/search', 'post', (options) => {
-    let body = {}
+  Mock.mock('/api/course/search', 'post', (options: any) => {
+    let body: any = {}
     try {
       body = JSON.parse(options.body || '{}')
     } catch (e) {
@@ -227,8 +227,8 @@ if (import.meta.env.DEV) {
   })
 
   // 最新课程
-  Mock.mock('/api/course/mostNew', 'post', (options) => {
-    let body = {}
+  Mock.mock('/api/course/mostNew', 'post', (options: any) => {
+    let body: any = {}
     try {
       body = JSON.parse(options.body || '{}')
     } catch (e) {

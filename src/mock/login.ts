@@ -3,7 +3,7 @@ import Mock from 'mockjs'
 // 只在开发环境启用 mock
 if (import.meta.env.DEV) {
   // 模拟账号密码登录
-  Mock.mock('/api/u/loginByJson', 'post', (options) => {
+  Mock.mock('/api/u/loginByJson', 'post', (options: any) => {
     const body = JSON.parse(options.body)
     
     // 由于代码中使用了加密，这里简化处理：只要用户名和密码不为空就认为登录成功
@@ -33,7 +33,7 @@ if (import.meta.env.DEV) {
   })
 
   // 模拟手机验证码登录
-  Mock.mock('/api/u/loginByMobile', 'post', (options) => {
+  Mock.mock('/api/u/loginByMobile', 'post', (options: any) => {
     const body = JSON.parse(options.body)
     
     // 验证码简单验证：假设验证码为 123456
@@ -70,7 +70,7 @@ if (import.meta.env.DEV) {
   })
 
   // 模拟发送验证码
-  Mock.mock(/\/api\/sms\/sendRegisterOrLoginCaptcha/, 'get', (options) => {
+  Mock.mock(/\/api\/sms\/sendRegisterOrLoginCaptcha/, 'get', () => {
     // 简单返回成功，实际验证码在 mock 中固定为 123456
     return {
       meta: {

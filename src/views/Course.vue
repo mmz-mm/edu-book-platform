@@ -50,7 +50,7 @@
 		            >全部</el-tag>
 		            <el-tag
 		            	v-for='item in courseLevel'
-		            	:key='item.id'
+		            	:key='item.code'
 		                class="category-poniter-item"
 		                effect="plain"
 		                type="info"
@@ -104,7 +104,7 @@
 								<img :src="item.courseCover">
 							</div>
 							<div class="courseName">{{item.courseName}}</div>
-	                        <div class="courseDegree">{{ courseTypeFn(item.courseLevel) }} · {{item.purchaseCounter + item.purchaseCnt}}人报名</div>
+	                        <div class="courseDegree">{{ courseTypeFn(item.courseLevel as CourseType) }} · {{item.purchaseCounter + item.purchaseCnt}}人报名</div>
 							
 	                        <div class="coursePriceZero" v-if="item.discountPrice == 0">
 	                            <div class="pricefree">免费学习</div>
@@ -138,30 +138,32 @@
 	<Foot></Foot>
 </template>
 
-<script setup  >
+<script setup lang="ts">
+import { ref, reactive, onBeforeMount } from 'vue'
     //mixin
-	import mixin from '../mixins/courseType.js'
-	let { courseTypeFn } = mixin();
+	import mixin from '../mixins/courseType'
+	const { courseTypeFn } = mixin();
 	//组件
 	import Header from '../components/common/Header.vue'
 	import Foot from '../components/common/Foot.vue'
 	//api
 	import { getFirstCategorys , getSecondCategorys , searchCourse } from '../utils/api/courseManage'
+	import type { Category, Course, CourseLevel, CourseType } from '@/types'
 	//获取一级分类的数据
-	let firstCategorys = ref([]);
+	const firstCategorys = ref<Category[]>([]);
 	//获取二级分类的数据
-	let secondCategorys = ref([]);
+	const secondCategorys = ref<Category[]>([]);
 	//课程难度的数据
-	let courseLevel = ref([
+	const courseLevel = ref<CourseLevel[]>([
 		{text: '初级',code: '1'}, 
 		{text: '中级',code: '2'},
 		{text: '高级',code: '3'}
 	]);
 	//查询课程的数据
-	let courseList = ref([]);
+	const courseList = ref<Course[]>([]);
 	//课程的总数量
-	let total = ref(0);
-	let queryCoursePrams = reactive({
+	const total = ref<number>(0);
+	const queryCoursePrams = reactive({
 		pageNum:1,
 		pageSize:8
 	})
@@ -188,7 +190,7 @@
 	})
 
 	//分页
-	const handleCurrentChange = ( val )=>{
+	const handleCurrentChange = (val: number)=>{
 		//页面的赋值
 		queryCoursePrams.pageNum = val;
 		//查询对应页的数据

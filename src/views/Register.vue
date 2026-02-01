@@ -81,12 +81,13 @@
    
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref , reactive } from 'vue';
 import { useRouter } from 'vue-router';
 //element-ui
 import { Avatar , Lock } from "@element-plus/icons-vue";
 import { ElMessage } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 //api
 import { registerByJson , registerByMobile } from '../utils/api/register'
 import { sendCaptcha } from '../utils/api/login'
@@ -98,24 +99,24 @@ const userStore = useUserStore();
 const router = useRouter();
 
 //账号注册和短信注册切换
-let current = ref(1);
+const current = ref<number>(1);
 //账号注册和短信注册
-let registerTxt = ref([
+const registerTxt = ref([
 	{id:1,text:'账号注册'},
 	{id:2,text:'短信注册'}
 ])
-const registerChange = ( id )=>{
+const registerChange = (id: number)=>{
 	current.value = id;
 }	
 //账号密码注册
-const ruleFormRef = ref('');
-let ruleForm = reactive({
+const ruleFormRef = ref<FormInstance>();
+const ruleForm = reactive({
 	username:'',
 	userpwd:'',
 	confirmPwd:''
 })
 // 自定义密码确认验证
-const validateConfirmPwd = (rule, value, callback) => {
+const validateConfirmPwd = (_rule: any, value: string, callback: (error?: Error) => void) => {
   if (value === '') {
     callback(new Error('请再次输入密码'));
   } else if (value !== ruleForm.userpwd) {
@@ -124,7 +125,7 @@ const validateConfirmPwd = (rule, value, callback) => {
     callback();
   }
 };
-let rules = reactive({
+const rules = reactive<FormRules>({
   username: [
   	{ required: true, message: '请输入用户名', trigger: 'blur' },
     { min: 3, max: 11, message: '请输入3-11位用户名', trigger: 'blur' },
@@ -139,29 +140,29 @@ let rules = reactive({
   ]
 });
 //账号密码点击注册
-const userBtn = (formEl) => {
+const userBtn = (formEl: FormInstance | undefined) => {
 	if (!formEl) return
- 	formEl.validate((valid, fields) => {
+ 	formEl.validate((valid: boolean) => {
 	    if (valid) {
 			registerByJson({
 				username:Encrypt(ruleForm.username),
 				password:Encrypt(ruleForm.userpwd)
 			}).then(res=>{
 				//注册成功
-				if( res.meta.code!="10006" ){
+				if( res.meta && res.meta.code!="10006" ){
 					ElMessage({
 					    showClose: true,
-					    message: res.meta.msg,
+					    message: res.meta.msg || '注册失败',
 					    type: 'error',
 					})
 					return;
 				} 
-				ElMessage({
+				(ElMessage as any)({
 				    showClose: true,
 				    message: '注册成功',
 				    type: 'success',
 				})
-				userStore.setToken(res.data.accessToken);
+				(userStore as ReturnType<typeof useUserStore>).setToken((res.data as any).accessToken);
 				// 注册成功后跳转到首页
 				setTimeout(() => {
 					router.push('/');
@@ -178,14 +179,14 @@ const userBtn = (formEl) => {
 }
 
 //短信注册
-let captcha = ref('发送验证码');
-let countdown = ref(0);
-const ruleFormRefPhone = ref('');
-let ruleFormPhone = reactive({
+const captcha = ref<string>('发送验证码');
+const countdown = ref<number>(0);
+const ruleFormRefPhone = ref<FormInstance>();
+const ruleFormPhone = reactive({
     phone:'',
     captcha:''
 })
-let rulesPhone = reactive({
+const rulesPhone = reactive<FormRules>({
   phone: [
     {required: true,message: '请输入手机号',trigger: 'blur',},
     {pattern: /^1[3456789]\d{9}$/,message: '目前只支持中国大陆的手机号码',},
@@ -215,7 +216,7 @@ const sendCode = () => {
         return;
     }
     sendCaptcha({ mobile: ruleFormPhone.phone }).then(res => {
-        if (res.meta.code === '10006') {
+        if (res.meta && res.meta.code === '10006') {
             ElMessage({
                 showClose: true,
                 message: '验证码发送成功，验证码为：123456',
@@ -236,11 +237,11 @@ const sendCode = () => {
         } else {
             ElMessage({
                 showClose: true,
-                message: res.meta.msg || '验证码发送失败',
+                message: res.meta?.msg || '验证码发送失败',
                 type: 'error',
             })
         }
-    }).catch(err => {
+    }).catch(() => {
         ElMessage({
             showClose: true,
             message: '验证码发送失败',
@@ -250,30 +251,30 @@ const sendCode = () => {
 }
 
 //注册按钮
-const phoneBtn = (formEl) => {
+const phoneBtn = (formEl: FormInstance | undefined) => {
     if (!formEl) return
-    formEl.validate((valid, fields) => {
+    formEl.validate((valid: boolean) => {
         if (valid) {    
             //用户输入的手机号
-            let mobile = Encrypt(ruleFormPhone.phone);
+            const mobile = Encrypt(ruleFormPhone.phone);
             //用户输入的验证码
-            let captcha = ruleFormPhone.captcha;
+            const captcha = ruleFormPhone.captcha;
             registerByMobile({ mobile, captcha }).then(res=>{
                 //注册成功
-                if( res.meta.code!="10006" ){
+                if( res.meta && res.meta.code!="10006" ){
                     ElMessage({
                         showClose: true,
-                        message: res.meta.msg,
+                        message: res.meta.msg || '注册失败',
                         type: 'error',
                     })
                     return;
                 }
-                ElMessage({
+                (ElMessage as any)({
                     showClose: true,
                     message: '注册成功',
                     type: 'success',
                 })
-                userStore.setToken(res.data.accessToken);
+                (userStore as ReturnType<typeof useUserStore>).setToken((res.data as any).accessToken);
                 // 注册成功后跳转到首页
                 setTimeout(() => {
                     router.push('/');

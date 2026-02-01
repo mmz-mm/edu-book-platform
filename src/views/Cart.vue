@@ -60,11 +60,12 @@
   <Foot></Foot>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { useRouter } from 'vue-router'
 //组件
 import Header from '../components/common/Header.vue'
 import Foot from '../components/common/Foot.vue'
-let router = useRouter();
+const router = useRouter();
 const goOrder = ()=>{
   router.push('/confirmOrder');
 }

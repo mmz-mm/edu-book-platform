@@ -3,7 +3,7 @@ import Mock from 'mockjs'
 // 只在开发环境启用 mock
 if (import.meta.env.DEV) {
   // 模拟账号密码注册
-Mock.mock('/api/u/registerByJson', 'post', (options) => {
+Mock.mock('/api/u/registerByJson', 'post', (options: any) => {
     const body = JSON.parse(options.body)
     
     // 简化处理：只要用户名和密码不为空就认为注册成功
@@ -32,7 +32,7 @@ Mock.mock('/api/u/registerByJson', 'post', (options) => {
   })
 
   // 模拟手机验证码注册
-  Mock.mock('/api/u/registerByMobile', 'post', (options) => {
+  Mock.mock('/api/u/registerByMobile', 'post', (options: any) => {
     const body = JSON.parse(options.body)
     
     // 验证码简单验证：假设验证码为 123456

@@ -52,12 +52,13 @@
     <Foot></Foot>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref } from 'vue'
 //组件
 import Header from '../components/common/Header.vue'
 import Foot from '../components/common/Foot.vue'
 //dialog
-const dialogVisible = ref(true);
+const dialogVisible = ref<boolean>(true);
 </script>
 
 <style scoped>

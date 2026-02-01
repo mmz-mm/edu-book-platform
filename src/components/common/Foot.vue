@@ -42,7 +42,7 @@
     </footer>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onBeforeMount } from 'vue'
 import { setting } from '@/utils/api/courseManage'
 

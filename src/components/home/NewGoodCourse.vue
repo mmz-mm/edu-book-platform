@@ -37,12 +37,13 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onBeforeMount } from 'vue' ;    
-import { newCourse } from '@/utils/api/courseManage.js' ; 
+import { newCourse } from '@/utils/api/courseManage' ; 
+import type { Course } from '@/types'
 
 //新上好课数据
-let newCourseList = ref([]);
+const newCourseList = ref<Course[]>([]);
 
 onBeforeMount(()=>{  
     newCourse( {

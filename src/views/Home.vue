@@ -6,7 +6,7 @@
     </div>
     <Foot></Foot>
 </template>
-<script setup>
+<script setup lang="ts">
     import Header from '@/components/common/Header.vue';
     import NavSwiper from '@/components/home/NavSwiper.vue';
     //按需加载组件

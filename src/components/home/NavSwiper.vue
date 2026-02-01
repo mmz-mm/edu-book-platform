@@ -143,17 +143,30 @@
          
     </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref, onBeforeMount } from 'vue';
 import { ArrowRight  } from "@element-plus/icons-vue";
-import {getFirstCategorys , getSliders, tagsList , searchCourse} from '@/utils/api/courseManage.js';
+import {getFirstCategorys , getSliders, tagsList , searchCourse} from '@/utils/api/courseManage';
+import type { Category, Course } from '@/types';
+
+// 标签类型
+interface Tag {
+  id: string;
+  tagName: string;
+}
+
+// 轮播图类型
+interface Slider {
+  id: string;
+  imageUrl: string;
+}
 
 // 获取一级课程分类的数据
-let getFirstList = ref([]);
+const getFirstList = ref<Category[]>([]);
 // 获取轮播图数据
-let slidersList = ref([]);
+const slidersList = ref<Slider[]>([]);
  //鼠标移入的默认布尔值
-let isFirst = ref(false); 
+const isFirst = ref<boolean>(false); 
 
 // 生命周期 — 兼容不同响应体结构并加上错误处理
 onBeforeMount(()=>{
@@ -170,19 +183,19 @@ onBeforeMount(()=>{
 })
 
 //获取课程标签的数据
-let tagsParams = {
+const tagsParams = {
     pageNum:1,
     pageSize:10,
     entity:{
 		firstCategory:'',
 	}
 };
-let tagsPageList = ref([]);
+const tagsPageList = ref<Tag[]>([]);
 //查询课程的数据
-let searchCourseList = ref([]);
+const searchCourseList = ref<Course[]>([]);
 
 //鼠标移入
-const mouseHover = (id)=>{
+const mouseHover = (id: string)=>{
     isFirst.value = true;
     //一级id传递给课程标签查询
     tagsParams.entity.firstCategory = id;

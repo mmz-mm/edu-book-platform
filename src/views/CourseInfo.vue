@@ -64,11 +64,11 @@
 	            <button class="btn-item">加入购物车</button>
 	          </div>
 	        </div>
-	        <div class="video" v-for="(item,index) in 4" :key="index">
+	        <div class="video" v-for="index in 4" :key="index">
 	          <div class="chapterName">章节标题</div>
 	          <div class="chapterDesc">章节描述</div>
 	          <ul class="videos">
-	            <li class="video-item" v-for="(k,i) in 4" :key="i">
+	            <li class="video-item" v-for="i in 4" :key="i">
 	              <div class="video-itemIcon">
 	                <i class="el-icon-video-camera"></i>
 	              </div>
@@ -104,15 +104,16 @@
 	<Foot></Foot>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref } from 'vue'
 //组件
 import Header from '../components/common/Header.vue'
 import Foot from '../components/common/Foot.vue'
 
 //切换章节和下载资料
-let active = ref(true);
+const active = ref<boolean>(true);
 //判断下载资料数据
-let downloadList = ref([]);
+const downloadList = ref<any[]>([]);
 //跳转播放页面
 // const goPlay = (item,chapterId)=>{
 //   router.push({

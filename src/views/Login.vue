@@ -100,12 +100,13 @@
     
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref , reactive } from 'vue';
 import { useRouter } from 'vue-router';
 //element-ui
-import { Avatar , Lock , Iphone } from "@element-plus/icons-vue";
+import { Avatar , Lock } from "@element-plus/icons-vue";
 import { ElMessage } from 'element-plus'
+import type { FormInstance } from 'element-plus'
 //api
 import { loginByJson , sendCaptcha , loginByMobile } from '../utils/api/login'
 //加密
@@ -116,22 +117,22 @@ const userStore = useUserStore();
 const router = useRouter();
 
 //账号登录和短信登录切换
-let current = ref(1);
+const current = ref<number>(1);
 //账号登录和短信登录
-let loginTxt = ref([
+const loginTxt = ref([
 	{id:1,text:'账号登录'},
 	{id:2,text:'短信登录'}
 ])
-const loginChange = ( id )=>{
+const loginChange = (id: number)=>{
 	current.value = id;
 }	
 //账号密码登录
-const ruleFormRef = ref('');
-let ruleForm = reactive({
+const ruleFormRef = ref<FormInstance>();
+const ruleForm = reactive({
 	username:'',
 	userpwd:''
 })
-let rules = reactive({
+const rules = reactive({
   username: [
   	{ required: true, message: '请输入用户名', trigger: 'blur' },
     { min: 3, max: 11, message: '请输入3-11位用户名', trigger: 'blur' },
@@ -142,34 +143,34 @@ let rules = reactive({
   ]
 });
 //账号密码点击登录
-const userBtn = (formEl) => {
+const userBtn = (formEl: FormInstance | undefined) => {
 	if (!formEl) return
- 	formEl.validate((valid, fields) => {
+ 	formEl.validate((valid: boolean) => {
 	    if (valid) {
 			loginByJson({
 				username:Encrypt(ruleForm.username),
 				password:Encrypt(ruleForm.userpwd)
 			}).then(res=>{
 				//登录成功
-				if( res.meta.code!="10006" ){
+				if( res.meta && res.meta.code!="10006" ){
 					ElMessage({
 					    showClose: true,
-					    message: res.meta.msg,
+					    message: res.meta.msg || '登录失败',
 					    type: 'error',
 					})
 					return;
 				} 
-				ElMessage({
+				(ElMessage as any)({
 				    showClose: true,
 				    message: '登录成功',
 				    type: 'success',
 				})
-				userStore.setToken(res.data.accessToken);
+				(userStore as ReturnType<typeof useUserStore>).setToken((res.data as any).accessToken);
 				// 登录成功后跳转到首页
 				setTimeout(() => {
 					router.push('/');
 				}, 1000);
-			}).catch(err => {
+			}).catch(() => {
 				ElMessage({
 				    showClose: true,
 				    message: '登录失败，请稍后重试',
@@ -186,9 +187,9 @@ const userBtn = (formEl) => {
 	})
 }
 //短信登录
-let captcha = ref('发送验证码');
-let countdown = ref(0);
-const ruleFormRefPhone = ref('');
+const captcha = ref<string>('发送验证码');
+const countdown = ref<number>(0);
+const ruleFormRefPhone = ref<FormInstance | undefined>();
 let ruleFormPhone = reactive({
     phone:'',
     captcha:''
@@ -222,7 +223,7 @@ const sendCode = () => {
         return;
     }
     sendCaptcha({ mobile: ruleFormPhone.phone }).then(res => {
-        if (res.meta.code === '10006') {
+        if (res.meta && res.meta.code === '10006') {
             ElMessage({
                 showClose: true,
                 message: '验证码发送成功，验证码为：123456',
@@ -243,11 +244,11 @@ const sendCode = () => {
         } else {
             ElMessage({
                 showClose: true,
-                message: res.meta.msg || '验证码发送失败',
+                message: res.meta?.msg || '验证码发送失败',
                 type: 'error',
             })
         }
-    }).catch(err => {
+    }).catch(() => {
         ElMessage({
             showClose: true,
             message: '验证码发送失败',
@@ -258,9 +259,9 @@ const sendCode = () => {
 
 
 //登录按钮
-const phoneBtn = (formEl) => {
+const phoneBtn = (formEl: FormInstance | undefined) => {
     if (!formEl) return
-    formEl.validate((valid, fields) => {
+    formEl.validate((valid: boolean) => {
         if (valid) {    
             //用户输入的手机号
             let mobile = Encrypt(ruleFormPhone.phone);
@@ -268,25 +269,25 @@ const phoneBtn = (formEl) => {
             let captcha = ruleFormPhone.captcha;
             loginByMobile({ mobile, captcha }).then(res=>{
                 //登录成功
-                if( res.meta.code!="10006" ){
+                if( res.meta && res.meta.code!="10006" ){
                     ElMessage({
                         showClose: true,
-                        message: res.meta.msg,
+                        message: res.meta.msg || '登录失败',
                         type: 'error',
                     })
                     return;
                 }
-                ElMessage({
+                (ElMessage as any)({
                     showClose: true,
                     message: '登录成功',
                     type: 'success',
                 })
-                userStore.setToken(res.data.accessToken);
+                (userStore as ReturnType<typeof useUserStore>).setToken((res.data as any).accessToken);
                 // 登录成功后跳转到首页
                 setTimeout(() => {
                     router.push('/');
                 }, 1000);
-            }).catch(err => {
+            }).catch(() => {
                 ElMessage({
                     showClose: true,
                     message: '登录失败，请稍后重试',
